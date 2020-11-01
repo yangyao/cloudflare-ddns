@@ -1,14 +1,10 @@
-const { post } = require('request-promise');
-
 (async ()=> {
-
     const request = require('request-promise');
     const sleep = require('sleep-promise');
     const dotenv = require('dotenv');
     dotenv.config()
 
     const endpoint = 'https://api.cloudflare.com/client/v4';
-    // PATCH zones/:zone_identifier/dns_records/:identifier
 
     const zoneId = process.env.ZONE_ID;
     const id = process.env.DNS_RECORD_ID;

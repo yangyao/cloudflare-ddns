@@ -4,7 +4,6 @@
     dotenv.config()
 
     const endpoint = 'https://api.cloudflare.com/client/v4';
-    // PATCH zones/:zone_identifier/dns_records/:identifier
 
     const zoneId = process.env.ZONE_ID;
     const authEmail =  process.env.AUTH_EMAIL;
