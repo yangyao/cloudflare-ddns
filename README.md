@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-对于没有 IP-v4 工网 IP 的同学，可以使用 IP-v6 来访问家里的群晖或者nextcloud服务。
+对于没有 IP-v4 公网 IP 的同学，可以使用 IP-v6 来访问家里的群晖或者nextcloud服务。
 
 ## 路由器配置
 
@@ -42,7 +42,7 @@ DOMAIN=你的域名，比如 ddns.xxx.com
 
 ## 脚本的其他配置
 
-- 修改你获取 IP 地址的 shell 脚本，由于每个人的情况不一样，请自己编写好获取 IP  的shell 脚本
+- 修改你获取 IP 地址的 shell 脚本，由于每个人的情况不一样，请自己编写好获取 IP  的shell 脚本，替换代码中原始的shell 脚本
 - 运行脚本 `node index.js`
 
 
