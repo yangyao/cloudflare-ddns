@@ -1,0 +1,19 @@
+{
+  "name": "cloudflare-ddns",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "ip": "^1.1.5",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "sleep-promise": "^9.0.0"
+  }
+}
