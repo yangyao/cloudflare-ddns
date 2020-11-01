@@ -15,13 +15,14 @@ const { post } = require('request-promise');
     const scKey = process.env.SCKEY;
     const authEmail =  process.env.AUTH_EMAIL;
     const authKey = process.env.AUTH_KEY;
+    const domain = process.env.DOMAIN;
 
     const shell = async (cmd) => {
         const exec = require('child_process').exec;
         return new Promise((resolve, reject) => {
          exec(cmd, (error, stdout, stderr) => {
           if (error) {
-           reject(error);
+           reject(error ? stderr : stdout);
           }
           resolve(stdout? stdout : stderr);
          });
@@ -37,7 +38,7 @@ const { post } = require('request-promise');
                 if (i >= attemptTimes - 1) {
                     throw err;
                 }
-                logger.warn({
+                console.warn({
                     message: 'attempt unseccessfully',
                     detail: {attemptTimes: i + 1, err_message: err.message},
                 });
@@ -71,8 +72,8 @@ const { post } = require('request-promise');
                 'X-Auth-Key': authKey,
             },
             body : {
-                "type":"AAA",
-                "name":"www.v2ray-yes.cf",
+                "type":"AAAA",
+                "name":domain,
                 "content": ip,
                 "ttl":120,
                 "proxied":false
