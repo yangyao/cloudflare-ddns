@@ -12,12 +12,15 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "ip": "^1.1.5",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "sleep-promise": "^9.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.12.1"
+    "eslint": "^7.12.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "install": "^0.13.0",
+    "npm": "^6.14.8"
   }
 }
