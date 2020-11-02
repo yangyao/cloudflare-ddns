@@ -37,7 +37,7 @@ ZONE_ID=在域名的首页右侧可以找到
 AUTH_EMAIL= 你的 cloudFlare 账号 email
 AUTH_KEY=你的 cloudFlare API key
 DOMAIN=你的域名，比如 ddns.xxx.com
-TYPE=如果是 ip-v4 那么设置为 A， 默认为 AAAA ， ip-v6
+DOMAIN_TYPE=如果是 ip-v4 那么设置为 A， 默认为 AAAA ， ip-v6
 COMMAND=获取ip 用到的 shell 命令（ 由于每个人的情况不一样，请自己编写好获取 IP  的shell 脚本
 SCKEY= server酱的key . 具体使用 google 一下哦
 

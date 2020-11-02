@@ -1,22 +1,12 @@
 (async () => {
   const request = require('request-promise');
   const sleep = require('sleep-promise');
+  const util = require('util');
+  const exec = util.promisify(require('child_process').exec);
   const dotenv = require('dotenv');
   dotenv.config();
 
   const endpoint = 'https://api.cloudflare.com/client/v4';
-
-  const shell = async (cmd) => {
-    const { exec } = require('child_process');
-    return new Promise((resolve, reject) => {
-      exec(cmd, (error, stdout, stderr) => {
-        if (error) {
-          reject(error ? stderr : stdout);
-        }
-        resolve(stdout || stderr);
-      });
-    });
-  };
 
   const retry = async (attemptTimes, duration, fn, args) => {
     for (let i = 0; i < attemptTimes; i += 1) {
@@ -121,8 +111,10 @@
   };
 
   try {
-    const command = "ip -6 addr | grep -v fe80 | grep 'scope global dynamic mngtmpaddr noprefixroute' | awk '{print $2}'";
-    const ip = await shell(command);
+    const command = process.env.COMMAND || "ip -6 addr | grep -v fe80 | grep 'scope global dynamic mngtmpaddr noprefixroute' | awk '{print $2}'";
+    const { stdout: ip, stderr } = await exec(command);
+    if (stderr) throw new Error(`${stderr}`);
+    if (!ip) throw new Error('ip address is empty, need update your command.');
     let record = await getDNS(credentails);
     if (!record) {
       record = await createDNS(credentails, ip);
@@ -130,6 +122,6 @@
     await retry(3, 3000, updateDNS, [credentails, record.id, ip.replace('/64', '')]);
     await notify(credentails.scKey, 'DNS_UPDATE_SUCCESS', ip);
   } catch (e) {
-    await notify(credentails.scKey, 'DNS_UPDATE_FAILED', e.message);
+    await notify(credentails.scKey, 'DNS_UPDATE_FAILED', e.message || 'unkonw error.');
   }
 })();
