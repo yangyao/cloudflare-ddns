@@ -40,7 +40,7 @@
       };
       await request(params);
     } catch (e) {
-      console.log(e.message);
+      console.error(e.message);
     }
   };
 
@@ -60,6 +60,7 @@
     }
     return null;
   };
+
   const createDNS = async (credentails, ip) => {
     const params = {
       url: `${endpoint}/zones/${credentails.zoneId}/dns_records`,
@@ -114,7 +115,7 @@
     const command = process.env.COMMAND || "ip -6 addr | grep -v fe80 | grep 'scope global dynamic mngtmpaddr noprefixroute' | awk '{print $2}'";
     const { stdout: ip, stderr } = await exec(command);
     if (stderr) throw new Error(`${stderr}`);
-    if (!ip) throw new Error('ip address is empty, need update your command.');
+    if (!ip) throw new Error('ip address is empty, may need to update your command.');
     let record = await getDNS(credentails);
     if (!record) {
       record = await createDNS(credentails, ip);
