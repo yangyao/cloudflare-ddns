@@ -28,20 +28,16 @@
   };
 
   const notify = async (scKey, title, description) => {
-    try {
-      const desp = description.replace(/[\n\r]/g, '\n\n');
-      const params = {
-        method: 'post',
-        url: `https://sc.ftqq.com/${scKey}.send`,
-        body: `text=${title}&desp=${desp}`,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      };
-      await request(params);
-    } catch (e) {
-      console.error(e.message);
-    }
+    const desp = description.replace(/[\n\r]/g, '\n\n');
+    const params = {
+      method: 'post',
+      url: `https://sc.ftqq.com/${scKey}.send`,
+      body: `text=${title}&desp=${desp}`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    };
+    await request(params);
   };
 
   const getDNS = async (credentails) => {
@@ -102,27 +98,40 @@
     await request(params);
   };
 
-  const credentails = {
-    zoneId: process.env.ZONE_ID,
-    scKey: process.env.SCKEY,
-    authEmail: process.env.AUTH_EMAIL,
-    authKey: process.env.AUTH_KEY,
-    domain: process.env.DOMAIN,
-    type: process.env.DOMAIN_TYPE || 'AAAA',
+  const fire = async () => {
+    const credentails = {
+      zoneId: process.env.ZONE_ID,
+      scKey: process.env.SCKEY,
+      authEmail: process.env.AUTH_EMAIL,
+      authKey: process.env.AUTH_KEY,
+      domain: process.env.DOMAIN,
+      type: process.env.DOMAIN_TYPE || 'AAAA',
+    };
+    try {
+      const command = process.env.COMMAND || "ip -6 addr | grep -v fe80 | grep 'scope global dynamic mngtmpaddr noprefixroute' | awk '{print $2}'";
+      const { stdout, stderr } = await exec(command);
+      if (stderr) throw new Error(`${stderr}`);
+      if (!stdout) throw new Error('ip address is empty, may need to update your command.');
+      const ip = stdout.replace('/64', '').trim();
+      console.log(`successful get local ip address : ${ip}`);
+      let record = await getDNS(credentails);
+      if (!record) {
+        console.log('failed to get DNS record, will create a new one');
+        record = await createDNS(credentails, ip);
+        console.log(`successful create a new DNS record : ${record.id}`);
+      }
+      if (record.content === ip) {
+        console.log('ip not change, will not update DNS record.');
+        return;
+      }
+      await updateDNS(credentails, record.id, ip);
+      console.log('successful update DNS record.');
+      await notify(credentails.scKey, 'DNS_UPDATE_SUCCESS', ip);
+    } catch (e) {
+      console.log('failed to update DNS record.');
+      await notify(credentails.scKey, 'DNS_UPDATE_FAILED', e.message || 'unkonw error.');
+    }
   };
 
-  try {
-    const command = process.env.COMMAND || "ip -6 addr | grep -v fe80 | grep 'scope global dynamic mngtmpaddr noprefixroute' | awk '{print $2}'";
-    const { stdout: ip, stderr } = await exec(command);
-    if (stderr) throw new Error(`${stderr}`);
-    if (!ip) throw new Error('ip address is empty, may need to update your command.');
-    let record = await getDNS(credentails);
-    if (!record) {
-      record = await createDNS(credentails, ip);
-    }
-    await retry(3, 3000, updateDNS, [credentails, record.id, ip.replace('/64', '')]);
-    await notify(credentails.scKey, 'DNS_UPDATE_SUCCESS', ip);
-  } catch (e) {
-    await notify(credentails.scKey, 'DNS_UPDATE_FAILED', e.message || 'unkonw error.');
-  }
+  await retry(3, 3000, fire, []);
 })();
